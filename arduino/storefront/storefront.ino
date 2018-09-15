@@ -13,7 +13,7 @@
 
 // program
 static int programnum = 0;
-#define NUMPROGRAMS 6
+#define NUMPROGRAMS 2
 // buttons
 static int button1state = 0;
 
@@ -51,7 +51,7 @@ void setup() {
 void loop() {
   checkbuttons();
  if (programnum == 0) {
-    alloff(10);
+    allon(10);
   }
   if (programnum == 1) {
     alloff(10);
@@ -79,9 +79,18 @@ void checkbuttons()
 
 }
 
+void allon(uint8_t wait)
+{
+  for (uint16_t i=0; i < strip.numPixels(); i=i+1) {
+    strip.setPixelColor(i,strip.Color(2*BRI,BRI,BRI));
+  }
+
+  strip.show();
+  delay(wait);
+}
+
 void alloff(uint8_t wait)
 {
-  int numstars = sizeof(starxlocs)/sizeof(int);
   for (uint16_t i=0; i < strip.numPixels(); i=i+1) {
     strip.setPixelColor(i,strip.Color(0,0,0));
   }
