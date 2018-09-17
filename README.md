@@ -6,14 +6,14 @@ Arudino code for driving pixel strips for Sam Trout's October 2018 storefront in
 * develop: mostly-working code, but sometimes won't work.
 * feature/my_feature: completely bleeding edge, no guarantees
 
-## Reposity structure
+## Repository structure
 * ./arduino: most of the code
 * ./images: project images
 * ./documents: documentation and notes
 
 ## Key files
-* ./arduion/storefront.ino: main arduino sketch for storefront
-* ./arduion/packmatrix.ino: reference arduino sketch from backpack lights
+* ./arduino/storefront.ino: main arduino sketch for storefront
+* ./arduino/packmatrix.ino: reference arduino sketch from backpack lights
 
 # Initial Plan (9/13/18)
 There will be one set of pixel strips wired together as a continuous line working in two banks, where the split point will be configurable.
@@ -39,5 +39,7 @@ A first version is now working with both banks implemented.  The following featu
     * Off for half the multiglow cycle. Peaks when Bank 1 is at its minimum
     * Brightness is modulated by multiglow cycle
     * Color for each pixel is full red and a random amount of green, which produces a range of yellows, oranges, and reds
+
+An image is below; and a [video is here](https://www.facebook.com/sumitsumit/videos/vb.674565829/10157698258905830/?type=2&theater&notif_t=video_processed&notif_id=1537150678672915)
 
 <img src="./images/180916_first_prototype.jpg" style="width: 800px;"/>
