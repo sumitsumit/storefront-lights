@@ -6,14 +6,17 @@
   #include <math.h>
 #endif
 
-#define PIN 5
-#define BRI 30
 
-// Multiglow constants
+// installation-specific constants - adjust these when using a different strip length
+#define OUTPUT_PIN 5
 #define BANK1_START 0
 #define BANK1_END 28
 #define BANK2_START 29
 #define BANK2_END 49
+#define BUTTON_AVAILABLE true
+
+// Multiglow constants
+#define BRI 30
 #define NUMBLOBS 4
 #define COLOR_INCR_R 0.137
 #define COLOR_INCR_B 0.155
@@ -46,8 +49,8 @@ static float multiglow_theta = 0.0;
 //   NEO_GRB     Pixels are wired for GRB bitstream (most NeoPixel products)
 //   NEO_RGB     Pixels are wired for RGB bitstream (v1 FLORA pixels, not v2)
 //   NEO_RGBW    Pixels are wired for RGBW bitstream (NeoPixel RGBW products)
-// Adafruit_NeoPixel strip = Adafruit_NeoPixel(50, PIN, NEO_GRB + NEO_KHZ800);
-Adafruit_NeoPixel strip = Adafruit_NeoPixel(50, PIN, NEO_RGB + NEO_KHZ400);
+// Adafruit_NeoPixel strip = Adafruit_NeoPixel(50, OUTPUT_PIN, NEO_GRB + NEO_KHZ800);
+Adafruit_NeoPixel strip = Adafruit_NeoPixel(50, OUTPUT_PIN, NEO_RGB + NEO_KHZ400);
 
 // IMPORTANT: To reduce NeoPixel burnout risk, add 1000 uF capacitor across
 // pixel power leads, add 300 - 500 Ohm resistor on first pixel's data input
@@ -79,7 +82,9 @@ void setup() {
 
 
 void loop() {
-  checkbuttons();
+  if (BUTTON_AVAILABLE) {
+    checkbuttons();
+  }
   if (programnum == 0) {
     multiglow(10);
   }
