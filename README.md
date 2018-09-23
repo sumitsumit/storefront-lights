@@ -43,3 +43,11 @@ A first version is now working with both banks implemented.  The following featu
 An image is below; and a [video is here](https://www.facebook.com/sumitsumit/videos/vb.674565829/10157698258905830/?type=2&theater&notif_t=video_processed&notif_id=1537150678672915)
 
 <img src="./images/180916_first_prototype.jpg" style="width: 800px;"/>
+
+# Second Version (9/22/18)
+An updated version is now finished, which both addresses the computate issues Josh was seeing with longer light strings, and also adds an IoT relay to control an external 120VAC lamp. 
+* Bank 1 computation can be cut by a factor of N by setting BLOB_SUBSAMPLE. This only does the compute for every Nth pixel, then uses the same values for the next N-1 pixels.
+* A [DLI IoT Relay](https://www.amazon.com/gp/product/B00WV7GMA2/ref=oh_aui_detailpage_o00_s00?ie=UTF8&psc=1) that can control 120VAC appliances (like Sam's lamp) has been added to the mix on output pin RELAY_PIN. It's controlled by functions lamp_on() and lamp_off()
+* The fire sequence now includes activation of the relay at the peak of the cycle. In the video below it's controlling a desk lamp.
+
+An [updated video is here](https://www.facebook.com/sumitsumit/videos/10157714445065830/).

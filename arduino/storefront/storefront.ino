@@ -9,6 +9,7 @@
 
 // installation-specific constants - adjust these when using a different strip length
 #define OUTPUT_PIN 5
+#define RELAY_PIN 3
 #define BANK1_START 0
 #define BANK1_END 28
 #define BANK2_START 29
@@ -25,6 +26,7 @@
 #define BLOB_THETA_INCR 0.01
 #define BLOB_MAX_VEL 0.005
 #define BLOB_SPATIAL_DECAY 400
+#define BLOB_SUBSAMPLE 2
 
 // program
 static int programnum = 0;
@@ -39,7 +41,8 @@ static float blobcolors_r[NUMBLOBS];
 static float blobcolors_g[NUMBLOBS];
 static float blobcolors_b[NUMBLOBS];
 static float multiglow_theta = 0.0;
-
+// relay
+static int relay_state = 0;
 
 // Parameter 1 = number of pixels in strip
 // Parameter 2 = Arduino pin number (most are valid)
@@ -76,6 +79,7 @@ void setup() {
 
   Serial.begin(9600);
   pinMode(A0, INPUT);
+  pinMode(RELAY_PIN, OUTPUT);
   strip.begin();
   strip.show(); // Initialize all pixels to 'off'
 }
@@ -119,6 +123,24 @@ void checkbuttons()
   }
 
 }
+
+void lamp_on()
+{
+  if (relay_state == 0) {
+    digitalWrite(RELAY_PIN,HIGH);
+    relay_state = 1;
+  }
+}
+
+void lamp_off()
+{
+  if (relay_state == 1) {
+    digitalWrite(RELAY_PIN,LOW);
+    relay_state = 0;
+  }
+
+}
+
 
 void multiglow(uint8_t wait)
 {
@@ -166,26 +188,33 @@ void multiglow(uint8_t wait)
   }
 
   // update pixels in bank 1
+  float rval = 0;
+  float gval = 0;
+  float bval = 0;
   if (cos(multiglow_theta) > -.5) {
+    lamp_off();
     for (uint16_t i= BANK1_START; i <= BANK1_END; i=i+1) {
-      float rval = 0;
-      float gval = 0;
-      float bval = 0;
-      for (uint16_t blobnum=0; blobnum<NUMBLOBS; blobnum++) {
-        // render blob blobnum for position i
-        float cursorpos = float(i-BANK1_START)/float(BANK1_END-BANK1_START+1);
-        float rsquared = (bloblocs[blobnum]-cursorpos)*(bloblocs[blobnum]-cursorpos);
-        float blob_brightness_dynamic = (1+cos(blobthetas[blobnum]))*(.5+cos(multiglow_theta));
-        float brightness = exp(-rsquared*BLOB_SPATIAL_DECAY)*blob_brightness_dynamic;
-        // strip.setPixelColor(i,strip.Color(int(brightness*blobcolors_r[blobnum]), 
-        //                                   int(brightness*blobcolors_g[blobnum]), 
-        //                                   int(brightness*blobcolors_b[blobnum])));
+      if (i % BLOB_SUBSAMPLE == 0) {
+        // reset values for accumulation
+        rval = 0;
+        gval = 0;
+        bval = 0;
+        for (uint16_t blobnum=0; blobnum<NUMBLOBS; blobnum++) {
+          // render blob blobnum for position i
+          float cursorpos = float(i-BANK1_START)/float(BANK1_END-BANK1_START+1);
+          float rsquared = (bloblocs[blobnum]-cursorpos)*(bloblocs[blobnum]-cursorpos);
+          float blob_brightness_dynamic = (1+cos(blobthetas[blobnum]))*(.5+cos(multiglow_theta));
+          float brightness = exp(-rsquared*BLOB_SPATIAL_DECAY)*blob_brightness_dynamic;
+          // strip.setPixelColor(i,strip.Color(int(brightness*blobcolors_r[blobnum]), 
+          //                                   int(brightness*blobcolors_g[blobnum]), 
+          //                                   int(brightness*blobcolors_b[blobnum])));
 
-        rval += brightness*BRI;
-        gval += brightness*BRI;
-        bval += brightness*BRI;
+          rval += brightness*BRI;
+          gval += brightness*BRI;
+          bval += brightness*BRI;
+        }
       }
-      strip.setPixelColor(i,strip.Color(int(rval),int(gval),int(bval)));
+      strip.setPixelColor(i,strip.Color(int(rval),int(gval),int(bval)));      
     }
   } else {
     for (uint16_t i= BANK1_START; i <= BANK1_END; i=i+1) {
@@ -195,10 +224,18 @@ void multiglow(uint8_t wait)
   // update pixels in bank 2
   float fire_brightness = -3*cos(multiglow_theta);
   if (fire_brightness > 0.0) {
+    // turn lamp on/off at peak of cycle
+    if (fire_brightness > 2.0) {
+      lamp_on();
+    } else {
+      lamp_off();
+    }
+    // set pixels to fire colors modulated by fire brightness
     for (uint16_t i= BANK2_START; i <= BANK2_END; i=i+1) {
       strip.setPixelColor(i,strip.Color(int(BRI*fire_brightness),int(random(BRI)*fire_brightness),0));
     }
   } else {
+    // otherwise turn all pixels off
     for (uint16_t i= BANK2_START; i <= BANK2_END; i=i+1) {
       strip.setPixelColor(i,strip.Color(0,0,0));
     }
