@@ -27,6 +27,7 @@
 #define BLOB_MAX_VEL 0.005
 #define BLOB_SPATIAL_DECAY 400
 #define BLOB_SUBSAMPLE 2
+#define FIRE_GREEN_LIMIT 0.75
 
 // program
 static int programnum = 0;
@@ -232,7 +233,7 @@ void multiglow(uint8_t wait)
     }
     // set pixels to fire colors modulated by fire brightness
     for (uint16_t i= BANK2_START; i <= BANK2_END; i=i+1) {
-      strip.setPixelColor(i,strip.Color(int(BRI*fire_brightness),int(random(BRI)*fire_brightness),0));
+      strip.setPixelColor(i,strip.Color(int(BRI*fire_brightness),int(random(BRI)*fire_brightness*FIRE_GREEN_LIMIT),0));
     }
   } else {
     // otherwise turn all pixels off

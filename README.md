@@ -51,3 +51,7 @@ An updated version is now finished, which both addresses the computate issues Jo
 * The fire sequence now includes activation of the relay at the peak of the cycle. In the video below it's controlling a desk lamp.
 
 An [updated video is here](https://www.facebook.com/sumitsumit/videos/10157714445065830/).
+
+# Third Version (9/29/18)
+Added constant FIRE_GREEN_LIMIT to allows for control of the level of green in the fire sequence. By default the fire sequence modulates the overall brightness with a cosine wave (fire_brightness) and sets the R pixel to this value, while the G pixel varies randomly between 0 and that value. As such, if the LEDs are in direct view, green light will sometimes appear. The upper bound of the random value is now FIRE_GREEN_LIMIT*fire_brightness. 
+
